@@ -221,7 +221,7 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
 
 #creating db extension
 resource "azurerm_virtual_machine_extension" "db_ext" {
-  name                 = "install_flask"
+  name                 = "init_postgresql"
   virtual_machine_id   = azurerm_linux_virtual_machine.vm-db.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
@@ -229,7 +229,7 @@ resource "azurerm_virtual_machine_extension" "db_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "git clone https://github.com/Milk18/terraform_project.git && sudo sh final_terraform/shell_scripts/db_script.sh"
+  "commandToExecute": "'sudo apt-get update' ; 'sudo apt install git -y' ; 'git clone https://github.com/Milk18/terraform_project.git && sudo sh final_terraform/shell_scripts/db_script.sh'"
 }
 SETTINGS
   depends_on = [
@@ -239,7 +239,7 @@ SETTINGS
 
 #creating web extension
 resource "azurerm_virtual_machine_extension" "web_ext" {
-  name                 = "install_flask"
+  name                 = "install_run_flask"
   virtual_machine_id   = azurerm_linux_virtual_machine.vm-web.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
@@ -247,7 +247,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "git clone https://github.com/Milk18/terraform_project.git && sudo sh final_terraform/shell_scripts/web_script.sh"
+  "commandToExecute": "'sudo apt-get update' ; 'sudo apt install git -y' ; 'git clone https://github.com/Milk18/terraform_project.git && sudo sh final_terraform/shell_scripts/web_script.sh'"
 }
 SETTINGS
   depends_on = [
