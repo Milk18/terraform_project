@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 apt-get update
 apt install postgresql postgresql-contrib -y
 systemctl start postgresql.service

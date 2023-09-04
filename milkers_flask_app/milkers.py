@@ -6,7 +6,7 @@ import os
 open_port = os.environ.get("APP_PORT", 8080)
 app = Flask(__name__)
 db_host = os.environ.get("DB_IP", '10.1.1.4')
-db_pass = os.environ.get("DB_PASS", "oriu")
+db_pass = os.environ.get("DB_PASS", -1)
 
 #connecting to db
 def get_db_connection():
