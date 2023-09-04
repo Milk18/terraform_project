@@ -1,5 +1,5 @@
 #!/bin/bash
-cat <<EOT >> ~/.bashrc
+cat <<EOT >> /home/oriu/.bashrc
 APP_PORT=8080
 DB_IP='10.1.1.4'
 DB_USER="oriu"

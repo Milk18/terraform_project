@@ -1,12 +1,7 @@
 #!/bin/bash
-apt install nano
 apt install python3
 apt install python3-pip -y
 pip install flask
 pip install psycopg2-binary
-source /home/oriu/.bashrc
-source /home/oriu/terraform_project/shell_scripts/export_script.sh
-python3 ~/terraform_project/milkers_flask_app/init_db.py
-python3 ~/terraform_project/milkers_flask_app/milkers.py &
-#python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/init_db.py
-#python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/milkers.py &
+python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/init_db.py
+python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/milkers.py &
