@@ -140,7 +140,7 @@ resource "azurerm_network_interface" "nic-db" {
     name                          = "internal"
     subnet_id                     =  azurerm_subnet.snet-db.id
     private_ip_address_allocation = "Static"
-    private_ip_address = "10.1.1.4"
+    private_ip_address = var.db_private_ip
     public_ip_address_id = azurerm_public_ip.pip-db.id
   }
 }
@@ -320,7 +320,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && export APP_PORT=8080 DB_IP='10.1.1.4' DB_USER='oriu' DB_PASS='oriu' && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && export APP_PORT=${var.web_app_port} DB_IP=${var.db_private_ip} DB_USER=${var.admin_user} DB_PASS=${var.db_password} && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
 }
 SETTINGS
   depends_on = [

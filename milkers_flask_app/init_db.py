@@ -3,9 +3,9 @@
 import os
 import psycopg2
 
-open_port = os.environ.get("APP_PORT", 8080)
-db_host = os.environ.get("DB_IP", '10.1.1.4')
-db_pass = os.environ.get("DB_PASS", "oriu")
+open_port = os.environ["APP_PORT"]
+db_host = os.environ["DB_IP"]
+db_pass = os.environ["DB_PASS"]
 
 conn = psycopg2.connect(host= db_host,
                             database='flask_db',

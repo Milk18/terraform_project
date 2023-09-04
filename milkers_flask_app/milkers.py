@@ -4,9 +4,9 @@ from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 import os
 
-open_port = os.environ.get("APP_PORT", 8080)
+open_port = os.environ["APP_PORT"]
 app = Flask(__name__)
-db_host = os.environ.get("DB_IP", '10.1.1.4')
+db_host = os.environ["DB_IP"]
 db_pass = os.environ["DB_PASS"]
 
 

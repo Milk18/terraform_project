@@ -13,6 +13,11 @@ variable "db_password" {
   description = "db password"
   type = string
 }
+variable "db_private_ip" {
+  description = "db private ip"
+  type = string
+  default = "10.1.1.4"
+}
 
 variable "web_app_port" {
   description = "open to web app exported port"
@@ -23,7 +28,6 @@ variable "web_app_port" {
 variable "admin_user" {
   description = "vm's username"
   type = string
-#  default = "oriu"
 }
 
 variable "admin_password" {
@@ -33,7 +37,6 @@ variable "admin_password" {
   validation {
     condition     = length(var.admin_password)>6
     error_message = "password too short"
-    #  default = "Ori#123"
   }
 }
 
