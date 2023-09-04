@@ -9,3 +9,6 @@ export DB_PASSWORD="oriu"
 sudo mkfs -t ext4 /dev/sdc
 sudo mkdir /data1
 sudo mount /dev/sdc /data1
+
+
+export APP_PORT=8080 DB_IP='10.1.1.4' DB_USER="oriu" DB_PASSWORD="oriu"

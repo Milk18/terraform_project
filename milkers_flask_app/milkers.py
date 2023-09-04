@@ -3,14 +3,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 import os
+
 open_port = os.environ.get("APP_PORT", 8080)
 app = Flask(__name__)
 db_host = os.environ.get("DB_IP", '10.1.1.4')
-db_pass = os.environ.get("DB_PASS", "oriu")
+db_pass = os.environ["DB_PASS"]
 
-#connecting to db
+
+# connecting to db
 def get_db_connection():
-    conn = psycopg2.connect(host= db_host,
+    conn = psycopg2.connect(host=db_host,
                             database='flask_db',
                             user="oriu",
                             password=db_pass)
@@ -26,6 +28,7 @@ def index():
     cur.close()
     conn.close()
     return render_template('index.html', books=books)
+
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
@@ -45,5 +48,6 @@ def create():
         conn.close()
         return redirect(url_for('index'))
     return render_template('create.html')
+
 
 app.run(host="0.0.0.0", port=open_port)
