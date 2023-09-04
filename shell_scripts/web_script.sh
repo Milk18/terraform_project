@@ -16,7 +16,7 @@ source .bashrc
 apt install nano
 apt install python3
 apt install python3-pip -y
-apt install git -y
+#apt install git -y
 #git clone https://github.com/Milk18/milkers_flask_app.git
 pip install flask
 pip install psycopg2-binary

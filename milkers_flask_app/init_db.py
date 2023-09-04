@@ -12,7 +12,7 @@ conn = psycopg2.connect(host= db_host,
                             user="oriu",
                             password=db_pass)
 
-# Open a cursor to perform database operations
+# Open a cursor to perform database operation
 cur = conn.cursor()
 
 # Execute a command: this creates a new table

@@ -8,6 +8,7 @@ app = Flask(__name__)
 db_host = os.environ.get("DB_IP", '10.1.1.4')
 db_pass = os.environ("DB_PASS", "oriu")
 
+#connecting to db
 def get_db_connection():
     conn = psycopg2.connect(host= db_host,
                             database='flask_db',
