@@ -10,6 +10,6 @@ output "rg_location" {
   value = var.location
 }
 output "web_ssh" {
-  value = tls_private_key.web_ssh.private_key_pem
+  value = tls_private_key.vm_ssh.private_key_pem
   sensitive = true
 }

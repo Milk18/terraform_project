@@ -146,14 +146,14 @@ resource "azurerm_network_interface" "nic-db" {
 }
 
 #configure ssh key
-resource "tls_private_key" "web_ssh" {
+resource "tls_private_key" "vm_ssh" {
   algorithm = "RSA"
   rsa_bits = 4096
 }
 
-resource "local_file" "web_ssh_pem" {
+resource "local_file" "ssh_pem" {
   filename = "${path.module}\\web_db_key.pem"
-  content = tls_private_key.web_ssh.private_key_pem
+  content = tls_private_key.vm_ssh.private_key_pem
 }
 
 #configuring vm for web app
@@ -169,7 +169,7 @@ resource "azurerm_linux_virtual_machine" "vm-web" {
     azurerm_network_interface.nic-web.id,
   ]
   admin_ssh_key {
-    public_key = tls_private_key.web_ssh.public_key_openssh
+    public_key = tls_private_key.vm_ssh.public_key_openssh
     username   = var.admin_user
   }
 
@@ -184,6 +184,9 @@ resource "azurerm_linux_virtual_machine" "vm-web" {
     sku       = "minimal-22_04-lts-gen2"
     version   = "latest"
   }
+  depends_on = [
+    azurerm_linux_virtual_machine.vm-db
+  ]
 }
 
 #configuring vm for db
@@ -199,7 +202,7 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
     azurerm_network_interface.nic-db.id,
   ]
   admin_ssh_key {
-    public_key = tls_private_key.web_ssh.public_key_openssh
+    public_key = tls_private_key.vm_ssh.public_key_openssh
     username   = var.admin_user
   }
 
@@ -216,19 +219,19 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
   }
 }
 
-resource "azurerm_virtual_machine_extension" "web_ext" {
-  name                 = "install_flask"
-  virtual_machine_id   = azurerm_linux_virtual_machine.vm-web.id
-  publisher            = "Microsoft.Azure.Extensions"
-  type                 = "CustomScript"
-  type_handler_version = "2.0"
-
-  settings = <<SETTINGS
- {
-  "commandToExecute": "git clone
-}
-SETTINGS
-}
+#resource "azurerm_virtual_machine_extension" "web_ext" {
+#  name                 = "install_flask"
+#  virtual_machine_id   = azurerm_linux_virtual_machine.vm-web.id
+#  publisher            = "Microsoft.Azure.Extensions"
+#  type                 = "CustomScript"
+#  type_handler_version = "2.0"
+#
+#  settings = <<SETTINGS
+# {
+#  "commandToExecute": "git clone
+#}
+#SETTINGS
+#}
 
 
 
