@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python3
 
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
