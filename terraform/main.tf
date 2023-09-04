@@ -320,7 +320,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && export APP_PORT=8080 DB_IP='10.1.1.4' DB_USER="oriu" DB_PASSWORD="oriu" && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && export APP_PORT=8080 DB_IP='10.1.1.4' DB_USER='oriu' DB_PASS='oriu' && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
 }
 SETTINGS
   depends_on = [
