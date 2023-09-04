@@ -21,4 +21,4 @@ apt install python3-pip -y
 pip install flask
 pip install psycopg2-binary
 python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/init_db.py
-python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/milkers.py
+python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/milkers.py &

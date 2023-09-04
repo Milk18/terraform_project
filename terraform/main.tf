@@ -225,7 +225,7 @@ resource "azurerm_virtual_machine_extension" "db_ext" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm-db.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
-  type_handler_version = "2.1"
+  type_handler_version = "2.0"
 
   settings = <<SETTINGS
  {
@@ -243,7 +243,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm-web.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
-  type_handler_version = "2.1"
+  type_handler_version = "2.0"
 
   settings = <<SETTINGS
  {
@@ -255,5 +255,8 @@ SETTINGS
     azurerm_virtual_machine_extension.db_ext,
     azurerm_linux_virtual_machine.vm-web
   ]
+#  timeouts {
+#    create = "3m"
+#  }
 }
 
