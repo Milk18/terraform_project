@@ -282,7 +282,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && source /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/export_script.bash && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
 }
 SETTINGS
   depends_on = [
