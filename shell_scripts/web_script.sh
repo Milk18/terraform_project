@@ -20,5 +20,5 @@ apt install git -y
 #git clone https://github.com/Milk18/milkers_flask_app.git
 pip install flask
 pip install psycopg2-binary
-python3 final_terrafom/milkers_flask_app/init_db.py
-python3 final_terrafom/milkers_flask_app/milkers.py
+python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/init_db.py
+python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flask_app/milkers.py
