@@ -1,5 +1,5 @@
 #!/bin/bash
-apt-get update
+apt install nano
 apt install postgresql postgresql-contrib -y
 systemctl start postgresql.service
 sudo -u postgres psql -c "CREATE DATABASE flask_db;"

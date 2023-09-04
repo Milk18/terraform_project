@@ -156,7 +156,7 @@ resource "local_file" "ssh_pem" {
   content = tls_private_key.vm_ssh.private_key_pem
 }
 
-#configuring vm for web app
+#configuring vm for web app and provisioner
 resource "azurerm_linux_virtual_machine" "vm-web" {
   name                            = "vm-web"
   resource_group_name             = azurerm_resource_group.rg.name
@@ -191,14 +191,14 @@ resource "azurerm_linux_virtual_machine" "vm-web" {
 
 #configuring vm for db
 resource "azurerm_linux_virtual_machine" "vm-db" {
-  name                            = "vm-db"
-  resource_group_name             = azurerm_resource_group.rg.name
-  location                        = azurerm_resource_group.rg.location
-  size                            = "Standard_B1ls"
-  admin_username                  = var.admin_user
+  name                  = "vm-db"
+  resource_group_name   = azurerm_resource_group.rg.name
+  location              = azurerm_resource_group.rg.location
+  size                  = "Standard_B1ls"
+  admin_username        = var.admin_user
   #admin_password                  = var.admin_password
   #disable_password_authentication = false
-  network_interface_ids           = [
+  network_interface_ids = [
     azurerm_network_interface.nic-db.id,
   ]
   admin_ssh_key {
@@ -219,6 +219,7 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
   }
 }
 
+
 #create web vm managed disk
 resource "azurerm_managed_disk" "web-disk" {
   name                 = "${azurerm_linux_virtual_machine.vm-web.name}-disk1"
@@ -234,6 +235,25 @@ resource "azurerm_virtual_machine_data_disk_attachment" "web_disk_attach" {
   virtual_machine_id = azurerm_linux_virtual_machine.vm-web.id
   lun                = "10"
   caching            = "ReadWrite"
+}
+#web provision to mount disk
+resource "null_resource" "web_vm_prov" {
+  connection {
+    type = "ssh"
+    user = var.admin_user
+    private_key = tls_private_key.vm_ssh.private_key_pem
+    host = azurerm_linux_virtual_machine.vm-web.public_ip_address
+  }
+  provisioner "remote-exec" {
+    inline=[
+    "sudo mkfs -t ext4 /dev/sdc",
+    "sudo mkdir /data1",
+    "sudo mount /dev/sdc /data1"
+    ]
+  }
+  depends_on = [
+    azurerm_virtual_machine_data_disk_attachment.web_disk_attach
+  ]
 }
 
 #create db vm managed disk
@@ -252,7 +272,25 @@ resource "azurerm_virtual_machine_data_disk_attachment" "db_disk_attach" {
   lun                = "10"
   caching            = "ReadWrite"
 }
-
+#db provision to mount disk
+resource "null_resource" "db_vm_prov" {
+  connection {
+    type = "ssh"
+    user = var.admin_user
+    private_key = tls_private_key.vm_ssh.private_key_pem
+    host = azurerm_linux_virtual_machine.vm-db.public_ip_address
+  }
+  provisioner "remote-exec" {
+    inline=[
+    "sudo mkfs -t ext4 /dev/sdc",
+    "sudo mkdir /data1",
+    "sudo mount /dev/sdc /data1"
+    ]
+  }
+  depends_on = [
+    azurerm_virtual_machine_data_disk_attachment.db_disk_attach
+  ]
+}
 
 #creating db extension
 resource "azurerm_virtual_machine_extension" "db_ext" {
