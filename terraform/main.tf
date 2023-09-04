@@ -219,19 +219,41 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
   }
 }
 
-#resource "azurerm_virtual_machine_extension" "web_ext" {
-#  name                 = "install_flask"
-#  virtual_machine_id   = azurerm_linux_virtual_machine.vm-web.id
-#  publisher            = "Microsoft.Azure.Extensions"
-#  type                 = "CustomScript"
-#  type_handler_version = "2.0"
-#
-#  settings = <<SETTINGS
-# {
-#  "commandToExecute": "git clone
-#}
-#SETTINGS
-#}
+#creating db extension
+resource "azurerm_virtual_machine_extension" "db_ext" {
+  name                 = "install_flask"
+  virtual_machine_id   = azurerm_linux_virtual_machine.vm-db.id
+  publisher            = "Microsoft.Azure.Extensions"
+  type                 = "CustomScript"
+  type_handler_version = "2.1"
 
+  settings = <<SETTINGS
+ {
+  "commandToExecute": "git clone https://github.com/Milk18/terraform_project.git && sudo sh final_terraform/shell_scripts/db_script.sh"
+}
+SETTINGS
+  depends_on = [
+  azurerm_linux_virtual_machine.vm-db
+  ]
+}
 
+#creating web extension
+resource "azurerm_virtual_machine_extension" "web_ext" {
+  name                 = "install_flask"
+  virtual_machine_id   = azurerm_linux_virtual_machine.vm-web.id
+  publisher            = "Microsoft.Azure.Extensions"
+  type                 = "CustomScript"
+  type_handler_version = "2.1"
+
+  settings = <<SETTINGS
+ {
+  "commandToExecute": "git clone https://github.com/Milk18/terraform_project.git && sudo sh final_terraform/shell_scripts/web_script.sh"
+}
+SETTINGS
+  depends_on = [
+  azurerm_linux_virtual_machine.vm-db,
+    azurerm_virtual_machine_extension.db_ext,
+    azurerm_linux_virtual_machine.vm-web
+  ]
+}
 
