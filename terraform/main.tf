@@ -298,7 +298,8 @@ resource "azurerm_virtual_machine_extension" "db_ext" {
 }
 SETTINGS
   depends_on = [
-  azurerm_linux_virtual_machine.vm-db
+  azurerm_linux_virtual_machine.vm-db,
+    null_resource.db_vm_prov
   ]
 }
 
