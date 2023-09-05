@@ -68,7 +68,7 @@ resource "azurerm_network_security_group" "nsg-db" {
     protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = 5432
-    source_address_prefix      = "10.1.0.0/24"
+    source_address_prefix      = azurerm_subnet.snet-web.address_prefixes[0]
     destination_address_prefix = "*"
   }
   security_rule {
@@ -161,7 +161,7 @@ resource "azurerm_linux_virtual_machine" "vm-web" {
   name                            = "vm-web"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
-  size                            = "Standard_B1ls"
+  size                            = var.vm_image_info.size
   admin_username                  = var.admin_user
 #  admin_password                  = var.admin_password
 #  disable_password_authentication = false
@@ -179,10 +179,10 @@ resource "azurerm_linux_virtual_machine" "vm-web" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-minimal-jammy"
-    sku       = "minimal-22_04-lts-gen2"
-    version   = "latest"
+    publisher = var.vm_image_info.publisher
+    offer     = var.vm_image_info.offer
+    sku       = var.vm_image_info.sku
+    version   = var.vm_image_info.version
   }
   depends_on = [
     azurerm_linux_virtual_machine.vm-db
@@ -194,7 +194,7 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
   name                  = "vm-db"
   resource_group_name   = azurerm_resource_group.rg.name
   location              = azurerm_resource_group.rg.location
-  size                  = "Standard_B1ls"
+  size                  = var.vm_image_info.size
   admin_username        = var.admin_user
   #admin_password                  = var.admin_password
   #disable_password_authentication = false
@@ -212,10 +212,10 @@ resource "azurerm_linux_virtual_machine" "vm-db" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-minimal-jammy"
-    sku       = "minimal-22_04-lts-gen2"
-    version   = "latest"
+    publisher = var.vm_image_info.publisher
+    offer     = var.vm_image_info.offer
+    sku       = var.vm_image_info.sku
+    version   = var.vm_image_info.version
   }
 }
 
@@ -245,11 +245,7 @@ resource "null_resource" "web_vm_prov" {
     host = azurerm_linux_virtual_machine.vm-web.public_ip_address
   }
   provisioner "remote-exec" {
-    inline=[
-    "sudo mkfs -t ext4 /dev/sdc",
-    "sudo mkdir /data1",
-    "sudo mount /dev/sdc /data1"
-    ]
+    inline=var.disk_mount
   }
   depends_on = [
     azurerm_virtual_machine_data_disk_attachment.web_disk_attach
@@ -281,11 +277,7 @@ resource "null_resource" "db_vm_prov" {
     host = azurerm_linux_virtual_machine.vm-db.public_ip_address
   }
   provisioner "remote-exec" {
-    inline=[
-    "sudo mkfs -t ext4 /dev/sdc",
-    "sudo mkdir /data1",
-    "sudo mount /dev/sdc /data1"
-    ]
+    inline= var.disk_mount
   }
   depends_on = [
     azurerm_virtual_machine_data_disk_attachment.db_disk_attach
@@ -302,7 +294,7 @@ resource "azurerm_virtual_machine_extension" "db_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/db_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/db_script.bash"
 }
 SETTINGS
   depends_on = [
@@ -320,7 +312,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone https://github.com/Milk18/terraform_project.git && export APP_PORT=${var.web_app_port} DB_IP=${var.db_private_ip} DB_USER=${var.admin_user} DB_PASS=${var.db_password} && sudo bash /var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts/web_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && export APlP_PORT=${var.web_app_port} DB_IP=${var.db_private_ip} DB_USER=${var.admin_user} DB_PASS=${var.db_password} && sudo bash /${var.extension_git_path}/web_script.bash"
 }
 SETTINGS
   depends_on = [

@@ -5,3 +5,5 @@
 .terraform/
 **.hcl
 **.info
+my_plan.txt
+.idea/

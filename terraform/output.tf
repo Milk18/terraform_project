@@ -13,3 +13,6 @@ output "web_ssh" {
   value = tls_private_key.vm_ssh.private_key_pem
   sensitive = true
 }
+output "web_port" {
+  value = var.web_app_port
+}
