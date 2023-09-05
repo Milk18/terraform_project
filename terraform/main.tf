@@ -151,6 +151,7 @@ resource "tls_private_key" "vm_ssh" {
   rsa_bits = 4096
 }
 
+# create a pem file in your current directory that will be later used in order to access the vm from your pc via ssh
 resource "local_file" "ssh_pem" {
   filename = "${path.module}\\web_db_key.pem"
   content = tls_private_key.vm_ssh.private_key_pem
@@ -312,7 +313,7 @@ resource "azurerm_virtual_machine_extension" "db_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/db_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' '${var.web_subnet}' "
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash ${var.extension_git_path}/db_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' '${var.web_subnet}' "
 }
 SETTINGS
   depends_on = [
@@ -329,7 +330,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
   type_handler_version = "2.0"
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/web_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' '${var.web_subnet}' "
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash ${var.extension_git_path}/web_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' '${var.web_subnet}' "
 }
 SETTINGS
   depends_on = [

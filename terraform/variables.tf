@@ -78,5 +78,5 @@ variable "git_repo" {
 variable "extension_git_path" {
   description = "vm path to activate bash scripts"
   type = string
-  default = "var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts"
+  default = "/var/lib/waagent/custom-script/download/0/terraform_project/shell_scripts"
 }

@@ -26,7 +26,8 @@ Milkers uses a number of open source projects to work properly:
 - [Python psycopg2] - Psycopg is the most popular PostgreSQL database adapter for the 
   Python programming language.
 - [Postgresql] - The database we used.
-- [Azure CLI] - a set of commands used to create and manage Azure resources.
+- [Azure CLI] - A set of commands used to create and manage Azure resources.
+- [DigitalOcean] - Special thanks to them for teaching me the principles and giving me the python code.
 
 
 ## Installation
@@ -35,8 +36,8 @@ Milkers requires [Terraform](https://developer.hashicorp.com/terraform/tutorials
 
 Install the dependencies to start the server.
 
-To connect terraform to your azure subscription, run the following commands:
-```sh
+To connect terraform to your azure subscription, run the following command:
+```bash
 az login --tenant <your subscription id>
 ```
 Follow the provided links for further configurations.
@@ -44,18 +45,24 @@ Follow the provided links for further configurations.
 Make sure that if you are using windows, you need to add terraform to your PATH. 
 See ["how to change PATH system variable?"](https://www.java.com/en/download/help/path.html)
 
+To initialize a new terraform directory run the following command:
+```bash
+terrafom init
+```
+
 ## Terraform
 ### terraform_directory:
 - **<u> main.tf:</u>**  The primary Terraform configuration file. It defines and provides data to the Terraform modules used in the project. This is where most of the infrastructure-as-code magic happens.
 - **<u> output.tf:</u>** Contains definitions of values to output after terraform apply is run. These values might include IP addresses, URLs, or other useful data.
 - **<u> providers.tf:</u>** Specifies and configures the providers used in the Terraform configuration. This is where you define the cloud providers (e.g., AWS, Azure) and any required settings.
 - **<u> variables.tf:</u>**  Contains variable definitions for Terraform. Variables are often used to generalize configurations, making it easier to reuse or adapt the code for different environments or purposes.
-
+some important variables are the password (which has no default value) and the web port (which is '8080' by default)
+- **<u> terraform.tfvars:</u>**  This file is not added to the repository because it contains sensitive data like password. Instead, you should make your own and specify key=value pairs that has no default value in the regular variables file. 
 
 ## Python 
 ### milkers_flask_app directory:
 - **<u> init_db.py:</u>**  A Python script responsible for initializing and setting up the database. This includes creating tables, setting up indices, and populating initial data.
-- **<u> milkers.py:</u>**  The primary Flask web application. This script runs the web server, defines routes, handles database interactions, and serves the application's webpages. This is what makes it all possible and accessible to the web. It uses flask and psycopg2 packages.
+- **<u> milkers.py:</u>**  The primary Flask web application. This script runs the web server, defines routes, handles database interactions, and serves the application's webpages. This is what makes it all possible and accessible to the web. It uses both flask and psycopg2 packages.
 
 
 ## Bash
@@ -69,16 +76,17 @@ If for some reason the DB vm has crashed , we need to restart the vm and start t
 sudo systemctl start postgresql.service
 ```
 ###
-If for some reason the WEB vm has crashed we need to do the following steps:
+If for some reason the WEB vm has crashed we need to restart the vm and run the following commands:
 1. In order to run the commands in a root shell:
 ```bash
 sudo -s 
 ```
-2. Export the necessary environment variables ((DB_PASS is a secret) :
+2. Export the necessary environment variables  :
 ```bash
-export APP_PORT=8080 DB_IP=10.1.1.4 DB_USER=oriu DB_PASS=* WEB_SNET=10.1.0.0/24
+export APP_PORT=8080 DB_IP=10.1.1.4 DB_USER=<your personal username> DB_PASS=<your personal password> WEB_SNET=10.1.0.0/24
 ```
-<sup> Make sure the values and keys are correct according to your terraform 'variables.tf' file and export script </sup> 
+<sup> Make sure the values and keys are correct according to your terraform 'variables.tf' file and export script. Note the the default
+value for the port open through both nsg is defined '8080' </sup> 
 
 3. Run the milkers.py python script in the background:
 ```bash
@@ -88,11 +96,11 @@ python3 /var/lib/waagent/custom-script/download/0/terraform_project/milkers_flas
 ```bash
 exit 
 ```
-<sup> Note that you need to make sure that the envs in the export command are correct and that your DB vm is up and running. </sup>
+<sup> Note that you need to make sure that the environment variables in the export command are correct and that your DB vm is up and running. </sup>
 
-####
 
-<span style="font-family:Coursive; font-size:2em;"> That's it folks! You can now start milking!</span> 🐄👨‍🌾🥛 
+
+## That's all folks! You can now start milking! 🐄👨‍🌾🥛 
 
 
 
@@ -107,5 +115,6 @@ exit
    [Python psycopg2]: <https://pypi.org/project/psycopg2/>
    [Postgresql]: <https://www.postgresql.org/docs/>
    [Azure CLI]: <https://learn.microsoft.com/en-us/cli/azure/>
+   [DigitalOcean]: <https://www.digitalocean.com/community/tutorials/how-to-use-a-postgresql-database-in-a-flask-application>
 
  
