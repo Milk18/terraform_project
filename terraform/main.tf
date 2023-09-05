@@ -312,7 +312,7 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
 # export APP_PORT=${var.web_app_port} DB_IP=${var.db_private_ip} DB_USER=${var.admin_user} DB_PASS=${var.db_password}
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/web_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/web_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' "
 }
 SETTINGS
   depends_on = [
