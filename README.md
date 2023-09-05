@@ -42,10 +42,31 @@ az login --tenant <your subscription id>
 Follow the provided links for further configurations.
 
 Make sure that if you are using windows, you need to add terraform to your PATH. 
-see ["how to change PATH system variable?"](https://www.java.com/en/download/help/path.html)
+See ["how to change PATH system variable?"](https://www.java.com/en/download/help/path.html)
 
-## That's it! You can now start milking! 🐄👨‍🌾 🥛
-##      ㅤㅤㅤㅤㅤㅤㅤㅤ ㅤㅤㅤ   ㅤㅤㅤㅤㅤㅤ           
+
+## Python 
+### milkers_flask_app directory:
+- **<u> init_db.py:</u>**  A Python script responsible for initializing and setting up the database. This includes creating tables, setting up indices, and populating initial data.
+- **<u> milkers.py:</u>**  The primary Flask web application. This script runs the web server, defines routes, handles database interactions, and serves the application's webpages. This is what makes it all possible and accessible to the web. It uses flask and psycopg2 packages.
+
+
+## Bash
+### shell_scripts directory:
+- **<u> db_script.bash:</u>**  Bash script designed for the setup and configuration of the database server. This includes installing necessary packages, adjusting configurations, and invoking other scripts like export_script.
+- **<u> web_script.bash:</u>**  Bash script for setting up and configuring the web server environment. This includes steps like installing required packages, setting up virtual environments, or starting the Flask app defined in milkers.py.
+- **<u> export_script.bash:</u>** Bash script that exports necessary environment variables. These environment variables include database credentials, port numbers, or other configuration values required by the Flask application or database.
+
+
+## Terraform
+### terraform_directory:
+- **<u> main.tf:</u>**  The primary Terraform configuration file. It defines and provides data to the Terraform modules used in the project. This is where most of the infrastructure-as-code magic happens.
+- **<u> output.tf:</u>** Contains definitions of values to output after terraform apply is run. These values might include IP addresses, URLs, or other useful data.
+- **<u> providers.tf:</u>** Specifies and configures the providers used in the Terraform configuration. This is where you define the cloud providers (e.g., AWS, Azure) and any required settings.
+- **<u> variables.tf:</u>**  Contains variable definitions for Terraform. Variables are often used to generalize configurations, making it easier to reuse or adapt the code for different environments or purposes.
+
+## That's it! You can now start _MILKING_! 🐄👨‍🌾 🥛
+
 
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
