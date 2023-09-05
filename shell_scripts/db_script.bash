@@ -9,3 +9,7 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE flask_db TO ${DB_USER
 echo "listen_addresses = '*'" | sudo tee -a /etc/postgresql/*/main/postgresql.conf
 echo "host   all    all    ${WEB_SNET}     md5" | sudo tee -a /etc/postgresql/*/main/pg_hba.conf
 sudo service postgresql restart
+
+
+# if for some reason the db vm has crashed , we need to restart the vm and start the postgres client:
+#1. sudo systemctl start postgresql.service
