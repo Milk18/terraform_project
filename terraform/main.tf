@@ -309,10 +309,10 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
   type_handler_version = "2.0"
-
+# export APP_PORT=${var.web_app_port} DB_IP=${var.db_private_ip} DB_USER=${var.admin_user} DB_PASS=${var.db_password}
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && export APP_PORT=${var.web_app_port} DB_IP=${var.db_private_ip} DB_USER=${var.admin_user} DB_PASS=${var.db_password} && sudo bash /${var.extension_git_path}/web_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/web_script.bash"
 }
 SETTINGS
   depends_on = [
