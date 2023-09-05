@@ -19,6 +19,11 @@ variable "db_private_ip" {
   default = "10.1.1.4"
 }
 
+variable "web_subnet" {
+  type = string
+  default = "10.1.0.0/24"
+}
+
 variable "web_app_port" {
   description = "open to web app exported port"
   type = number
@@ -62,16 +67,6 @@ variable "vm_image_info" {
     sku       = "minimal-22_04-lts-gen2"
     version   = "latest"
   }
-}
-
-variable "disk_mount" {
-  description = "list of commands to mounting disk to the vm"
-  type = list(string)
-  default = [
-    "sudo mkfs -t ext4 /dev/sdc",
-    "sudo mkdir /data1",
-    "sudo mount /dev/sdc /data1"
-    ]
 }
 
 variable "git_repo" {

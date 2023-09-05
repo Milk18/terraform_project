@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "vnet" {
 
 #configuring 2 subnets
 resource "azurerm_subnet" "snet-web" {
-  address_prefixes     = ["10.1.0.0/24"]
+  address_prefixes     = [var.web_subnet]
   name                 = "snet-web-westeu"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
@@ -156,7 +156,7 @@ resource "local_file" "ssh_pem" {
   content = tls_private_key.vm_ssh.private_key_pem
 }
 
-#configuring vm for web app and provisioner
+#configuring vm for web app
 resource "azurerm_linux_virtual_machine" "vm-web" {
   name                            = "vm-web"
   resource_group_name             = azurerm_resource_group.rg.name
@@ -235,6 +235,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "web_disk_attach" {
   virtual_machine_id = azurerm_linux_virtual_machine.vm-web.id
   lun                = "10"
   caching            = "ReadWrite"
+  depends_on = [azurerm_linux_virtual_machine.vm-web, azurerm_managed_disk.web-disk]
 }
 #web provision to mount disk
 resource "null_resource" "web_vm_prov" {
@@ -245,11 +246,18 @@ resource "null_resource" "web_vm_prov" {
     host = azurerm_linux_virtual_machine.vm-web.public_ip_address
   }
   provisioner "remote-exec" {
-    inline=var.disk_mount
+    inline=[
+      "sudo mkfs -t ext4 /dev/sdc",
+      "sudo mkdir /data1",
+      "sudo mount /dev/sdc /data1"
+    ]
   }
   depends_on = [
     azurerm_virtual_machine_data_disk_attachment.web_disk_attach
   ]
+  triggers = {
+    always_run = timestamp()
+  }
 }
 
 #create db vm managed disk
@@ -261,13 +269,16 @@ resource "azurerm_managed_disk" "db-disk" {
   create_option        = "Empty"
   disk_size_gb         = 10
 }
+
 #attach db disk to web vm
 resource "azurerm_virtual_machine_data_disk_attachment" "db_disk_attach" {
   managed_disk_id    = azurerm_managed_disk.db-disk.id
   virtual_machine_id = azurerm_linux_virtual_machine.vm-db.id
   lun                = "10"
   caching            = "ReadWrite"
+  depends_on = [azurerm_linux_virtual_machine.vm-db, azurerm_managed_disk.db-disk]
 }
+
 #db provision to mount disk
 resource "null_resource" "db_vm_prov" {
   connection {
@@ -277,11 +288,18 @@ resource "null_resource" "db_vm_prov" {
     host = azurerm_linux_virtual_machine.vm-db.public_ip_address
   }
   provisioner "remote-exec" {
-    inline= var.disk_mount
+    inline= [
+      "sudo mkfs -t ext4 /dev/sdc",
+      "sudo mkdir /data1",
+      "sudo mount /dev/sdc /data1"
+      ]
   }
   depends_on = [
     azurerm_virtual_machine_data_disk_attachment.db_disk_attach
   ]
+  triggers = {
+    always_run = timestamp()
+  }
 }
 
 #creating db extension
@@ -294,11 +312,10 @@ resource "azurerm_virtual_machine_extension" "db_ext" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/db_script.bash"
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/db_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' '${var.web_subnet}' "
 }
 SETTINGS
   depends_on = [
-  azurerm_linux_virtual_machine.vm-db,
     null_resource.db_vm_prov
   ]
 }
@@ -312,13 +329,12 @@ resource "azurerm_virtual_machine_extension" "web_ext" {
   type_handler_version = "2.0"
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/web_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' "
+  "commandToExecute": "sudo apt-get update && sudo apt install git -y && git clone ${var.git_repo} && sudo bash /${var.extension_git_path}/web_script.bash '${var.web_app_port}' '${var.db_private_ip}' '${var.admin_user}' '${var.db_password}' '${var.web_subnet}' "
 }
 SETTINGS
   depends_on = [
-  azurerm_linux_virtual_machine.vm-db,
-    azurerm_virtual_machine_extension.db_ext,
-    azurerm_linux_virtual_machine.vm-web
+    azurerm_linux_virtual_machine.vm-web,
+    azurerm_virtual_machine_extension.db_ext
   ]
 }
 
